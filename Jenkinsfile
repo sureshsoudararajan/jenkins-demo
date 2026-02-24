@@ -12,7 +12,7 @@ pipeline {
 
         stage('Run') {
             steps {
-                sh 'nohup java -jar target/jenkins-demo-0.0.1-SNAPSHOT.jar --server.port=8081 &'
+                sh 'nohup java -jar target/jenkins-demo-0.0.1-SNAPSHOT.jar &'
             }
         }
     }
