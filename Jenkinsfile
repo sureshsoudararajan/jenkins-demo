@@ -18,25 +18,20 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                sh '''
-                echo "Stopping old application if running..."
-                pkill -f ${APP_NAME} || true
-                sleep 3
+    steps {
+        sh '''
+        echo "Copying jar to /opt directory"
+        sudo cp target/jenkins-demo-0.0.1-SNAPSHOT.jar /opt/jenkins-demo/jenkins-demo.jar
 
-                echo "Starting new application..."
-                nohup java -jar target/jenkins-demo-0.0.1-SNAPSHOT.jar \
-                --server.port=${APP_PORT} \
-                --server.address=0.0.0.0 \
-                > app.log 2>&1 &
+        echo "Restarting systemd service"
+        sudo systemctl restart jenkins-demo
 
-                sleep 5
+        sleep 5
 
-                echo "Checking if app started..."
-                ss -tulnp | grep ${APP_PORT} || true
-                '''
-            }
-        }
+        sudo systemctl status jenkins-demo --no-pager
+        '''
+    }
+}
     }
 
     post {
