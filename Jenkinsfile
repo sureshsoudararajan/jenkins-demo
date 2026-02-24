@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = "jenkins-demo"
-        APP_PORT = "8081"
-    }
-
     stages {
 
         stage('Build') {
@@ -17,29 +12,20 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-    steps {
-        sh '''
-        echo "Copying jar to /opt directory"
-        sudo cp target/jenkins-demo-0.0.1-SNAPSHOT.jar /opt/jenkins-demo/jenkins-demo.jar
-
-        echo "Restarting systemd service"
-        sudo systemctl restart jenkins-demo
-
-        sleep 5
-
-        sudo systemctl status jenkins-demo --no-pager
-        '''
-    }
-}
-    }
-
-    post {
-        success {
-            echo "Application deployed successfully on port ${APP_PORT}"
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t jenkins-demo .'
+            }
         }
-        failure {
-            echo "Build or deployment failed"
+
+        stage('Docker Deploy') {
+            steps {
+                sh '''
+                docker stop jenkins-demo-container || true
+                docker rm jenkins-demo-container || true
+                docker run -d -p 8081:8081 --name jenkins-demo-container jenkins-demo
+                '''
+            }
         }
     }
 }
