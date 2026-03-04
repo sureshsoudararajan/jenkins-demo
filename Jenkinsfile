@@ -17,6 +17,9 @@ pipeline{
         //     }
         // }
         stage('Build'){
+            agent {
+                label 'docker-agent'
+            }
             steps{
                 sh 'chmod +x mvnw'
                 sh './mvnw clean package'
