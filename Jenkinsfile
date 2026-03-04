@@ -26,9 +26,6 @@ pipeline{
             }
         }
         stage('Docker Build'){
-            agent {
-                label 'docker-agent'
-            }
             steps{
                 sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .'
             }
