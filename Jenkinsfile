@@ -1,4 +1,3 @@
-// Jenkins File for Pipeline Project.
 pipeline{
     agent any
     tools{
